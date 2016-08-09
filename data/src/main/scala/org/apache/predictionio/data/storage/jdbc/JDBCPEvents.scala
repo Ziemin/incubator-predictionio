@@ -21,7 +21,7 @@ import com.github.nscala_time.time.Imports._
 import org.apache.predictionio.data.storage.{DataMap, Event, PEvents, StorageClientConfig}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.{JdbcRDD, RDD}
-import org.apache.spark.sql.{SQLContext, SaveMode}
+import org.apache.spark.sql.{SparkSession, SaveMode}
 import org.json4s.JObject
 import org.json4s.native.Serialization
 
@@ -46,35 +46,35 @@ class JDBCPEvents(client: String, config: StorageClientConfig, namespace: String
     val par = scala.math.min(
       new Duration(upper - lower).getStandardDays,
       config.properties.getOrElse("PARTITIONS", "4").toLong).toInt
-    val entityTypeClause = entityType.map(x => s"and entityType = '$x'").getOrElse("")
-    val entityIdClause = entityId.map(x => s"and entityId = '$x'").getOrElse("")
+    val entityTypeClause = entityType.map(x => s"""and "entityType" = '$x'""").getOrElse("")
+    val entityIdClause = entityId.map(x => s"""and "entityId" = '$x'""").getOrElse("")
     val eventNamesClause =
-      eventNames.map("and (" + _.map(y => s"event = '$y'").mkString(" or ") + ")").getOrElse("")
+      eventNames.map("and (" + _.map(y => s""""event\" = '$y'""").mkString(" or ") + ")").getOrElse("")
     val targetEntityTypeClause = targetEntityType.map(
-      _.map(x => s"and targetEntityType = '$x'"
-    ).getOrElse("and targetEntityType is null")).getOrElse("")
+      _.map(x => s"""and "targetEntityType" = '$x'"""
+    ).getOrElse(s"""and "targetEntityType" is null""")).getOrElse("")
     val targetEntityIdClause = targetEntityId.map(
-      _.map(x => s"and targetEntityId = '$x'"
-    ).getOrElse("and targetEntityId is null")).getOrElse("")
+      _.map(x => s"""and "targetEntityId" = '$x'"""
+    ).getOrElse(s"""and "targetEntityId" is null""")).getOrElse("")
     val q = s"""
       select
-        id,
-        event,
-        entityType,
-        entityId,
-        targetEntityType,
-        targetEntityId,
-        properties,
-        eventTime,
-        eventTimeZone,
-        tags,
-        prId,
-        creationTime,
-        creationTimeZone
+        "id",
+        "event",
+        "entityType",
+        "entityId",
+        "targetEntityType",
+        "targetEntityId",
+        "properties",
+        "eventTime",
+        "eventTimeZone",
+        "tags",
+        "prId",
+        "creationTime",
+        "creationTimeZone"
       from ${JDBCUtils.eventTableName(namespace, appId, channelId)}
       where
-        eventTime >= ${JDBCUtils.timestampFunction(client)}(?) and
-        eventTime < ${JDBCUtils.timestampFunction(client)}(?)
+        "eventTime" >= ${JDBCUtils.timestampFunction(client)}(?) and
+        "eventTime" < ${JDBCUtils.timestampFunction(client)}(?)
       $entityTypeClause
       $entityIdClause
       $eventNamesClause
@@ -114,9 +114,9 @@ class JDBCPEvents(client: String, config: StorageClientConfig, namespace: String
   }
 
   def write(events: RDD[Event], appId: Int, channelId: Option[Int])(sc: SparkContext): Unit = {
-    val sqlContext = new SQLContext(sc)
+    val sparkSession = SparkSession.builder().getOrCreate()
 
-    import sqlContext.implicits._
+    import sparkSession.implicits._
 
     val tableName = JDBCUtils.eventTableName(namespace, appId, channelId)
 
