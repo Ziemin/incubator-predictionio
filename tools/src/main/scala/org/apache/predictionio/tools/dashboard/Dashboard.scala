@@ -24,7 +24,7 @@ import org.apache.predictionio.configuration.SSLConfiguration
 import org.apache.predictionio.data.storage.Storage
 import spray.can.server.ServerSettings
 import spray.routing.directives.AuthMagnet
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.{Future, ExecutionContext, Await}
 import akka.actor.{ActorContext, Actor, ActorSystem, Props}
 import akka.io.IO
 import akka.pattern.ask
@@ -72,7 +72,7 @@ object Dashboard extends Logging with SSLConfiguration {
       interface = dc.ip,
       port = dc.port,
       settings = Some(settings.copy(sslEncryption = sslEnforced)))
-    system.awaitTermination
+    Await.result(system.whenTerminated, Duration.Inf)
   }
 }
 
