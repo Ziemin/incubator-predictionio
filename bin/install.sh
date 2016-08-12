@@ -1,12 +1,21 @@
 #!/usr/bin/env bash
 
-# Copyright 2015 TappingStone, Inc.
 #
-# This script will install PredictionIO onto your computer!
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
 #
-# Documentation: http://docs.prediction.io
+#    http://www.apache.org/licenses/LICENSE-2.0
 #
-# License: http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 OS=`uname`
 PIO_VERSION=0.9.6
@@ -93,8 +102,9 @@ if [[ "$OS" = "Linux" && $(cat /proc/1/cgroup) == *cpu:/docker/* ]]; then
   # Java Install
   echo -e "\033[1;36mStarting Java install...\033[0m"
 
+  sudo add-apt-repository -y ppa:openjdk-r/ppa
   sudo apt-get update
-  sudo apt-get install openjdk-7-jdk libgfortran3 -y
+  sudo apt-get install openjdk-8-jdk libgfortran3 -y
 
   echo -e "\033[1;32mJava install done!\033[0m"
 
@@ -126,8 +136,9 @@ elif [[ "$1" == "-y" ]]; then
   echo -e "\033[1;36mStarting Java install...\033[0m"
 
   # todo: make java installation platform independent
+  sudo add-apt-repository -y ppa:openjdk-r/ppa
   sudo apt-get update
-  sudo apt-get install openjdk-7-jdk libgfortran3 python-pip -y
+  sudo apt-get install openjdk-8-jdk libgfortran3 python-pip -y
   sudo pip install predictionio
 
   echo -e "\033[1;32mJava install done!\033[0m"
@@ -233,8 +244,9 @@ else
         echo -e "\033[33mThis script requires superuser access!\033[0m"
         echo -e "\033[33mYou will be prompted for your password by sudo:\033[0m"
 
+        sudo add-apt-repository -y ppa:openjdk-r/ppa
         sudo apt-get update
-        sudo apt-get install openjdk-7-jdk libgfortran3 python-pip -y
+        sudo apt-get install openjdk-8-jdk libgfortran3 python-pip -y
         sudo pip install predictionio
 
         echo -e "\033[1;32mJava install done!\033[0m"
