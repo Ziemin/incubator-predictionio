@@ -1,6 +1,6 @@
 from ubuntu
 
-ENV SPARK_VERSION 1.4.0
+ENV SPARK_VERSION 2.0.0
 ENV ELASTICSEARCH_VERSION 1.4.4
 ENV HBASE_VERSION 1.0.0
 
@@ -25,10 +25,10 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
 
 RUN echo "== Installing Spark =="
 RUN mkdir vendors
-RUN wget http://d3kbcqa49mib13.cloudfront.net/spark-${SPARK_VERSION}-bin-hadoop2.6.tgz
-RUN tar zxvfC spark-${SPARK_VERSION}-bin-hadoop2.6.tgz /vendors
-RUN rm spark-${SPARK_VERSION}-bin-hadoop2.6.tgz
-ENV SPARK_HOME /vendors/spark-${SPARK_VERSION}-bin-hadoop2.6
+RUN wget http://d3kbcqa49mib13.cloudfront.net/spark-${SPARK_VERSION}-bin-hadoop2.7.tgz
+RUN tar zxvfC spark-${SPARK_VERSION}-bin-hadoop2.7.tgz /vendors
+RUN rm spark-${SPARK_VERSION}-bin-hadoop2.7.tgz
+ENV SPARK_HOME /vendors/spark-${SPARK_VERSION}-bin-hadoop2.7
 
 RUN echo "== Installing Elasticsearch =="
 RUN wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-${ELASTICSEARCH_VERSION}.tar.gz

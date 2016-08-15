@@ -52,7 +52,7 @@ env:
 
 before_install:
   - unset SBT_OPTS JVM_OPTS
-  - docker pull ziemin/pio-testing
+  - docker pull ziemin/pio-testing:spark_2.0.0
   - service haveged start
 
 before_script:
