@@ -155,5 +155,6 @@ object AdminRun {
     AdminServer.createAdminServer(AdminServerConfig(
       ip = "localhost",
       port = 7071))
+    .awaitTermination
   }
 }

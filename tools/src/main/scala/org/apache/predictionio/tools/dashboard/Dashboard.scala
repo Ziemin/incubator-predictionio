@@ -55,7 +55,7 @@ object Dashboard extends Logging with SSLConfiguration {
     }
 
     parser.parse(args, DashboardConfig()) map { dc =>
-      createDashboard(dc)
+      createDashboard(dc).awaitTermination
     }
   }
 
