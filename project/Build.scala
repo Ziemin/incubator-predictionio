@@ -31,4 +31,7 @@ object PIOBuild extends Build {
   val akkaVersion = SettingKey[String](
     "akka-version",
     "The version of Akka used for building")
+  val hadoopVersion = SettingKey[String](
+    "hadoop-version",
+    "The version of Apache Hadoop used for building")
 }

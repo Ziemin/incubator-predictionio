@@ -57,6 +57,13 @@ def getAkkaVersion(scalaVersion: String) = scalaVersion match {
   case `newScalaVersion` => "2.4.9"
 }
 
+hadoopVersion in ThisBuild := getHadoopVersion(scalaVersion.value)
+
+def getHadoopVersion(scalaVersion: String) = scalaVersion match {
+  case `oldScalaVersion` => "2.6.4"
+  case `newScalaVersion` => "2.7.3"
+}
+
 lazy val pioBuildInfoSettings = buildInfoSettings ++ Seq(
   sourceGenerators in Compile <+= buildInfo,
   buildInfoKeys := Seq[BuildInfoKey](
