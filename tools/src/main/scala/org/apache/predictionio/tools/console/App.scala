@@ -22,8 +22,6 @@ import org.apache.predictionio.data.storage
 
 import grizzled.slf4j.Logging
 
-import scala.io.StdIn.readLine
-
 case class AppArgs(
   id: Option[Int] = None,
   name: String = "",

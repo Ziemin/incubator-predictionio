@@ -28,4 +28,7 @@ object PIOBuild extends Build {
   val sparkVersion = SettingKey[String](
     "spark-version",
     "The version of Apache Spark used for building.")
+  val akkaVersion = SettingKey[String](
+    "akka-version",
+    "The version of Akka used for building")
 }

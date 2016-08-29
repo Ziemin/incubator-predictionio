@@ -33,7 +33,7 @@ import spray.http.{MediaTypes, StatusCodes}
 import spray.httpx.Json4sSupport
 import spray.routing._
 
-import scala.concurrent.{ExecutionContext, Await}
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.Duration
 
 class AdminServiceActor(val commandClient: CommandClient)
@@ -147,7 +147,7 @@ object AdminServer {
       Props(classOf[AdminServerActor], commandClient),
       "AdminServerActor")
     serverActor ! StartServer(config.ip, config.port)
-    Await.result(system.whenTerminated, Duration.Inf)
+    system.awaitTermination
   }
 }
 

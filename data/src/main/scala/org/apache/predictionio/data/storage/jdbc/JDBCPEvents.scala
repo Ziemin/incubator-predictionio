@@ -21,10 +21,13 @@ package org.apache.predictionio.data.storage.jdbc
 import java.sql.{DriverManager, ResultSet}
 
 import com.github.nscala_time.time.Imports._
-import org.apache.predictionio.data.storage.{DataMap, Event, PEvents, StorageClientConfig}
+import org.apache.predictionio.data.storage.{
+  DataMap, Event, PEvents, StorageClientConfig}
+import org.apache.predictionio.data.SparkVersionDependent
 import org.apache.spark.SparkContext
-import org.apache.spark.rdd.{JdbcRDD, RDD}
-import org.apache.spark.sql.{SparkSession, SaveMode}
+import org.apache.spark.rdd.RDD
+import org.apache.spark.rdd.JdbcRDD
+import org.apache.spark.sql.SaveMode
 import org.json4s.JObject
 import org.json4s.native.Serialization
 
@@ -49,35 +52,35 @@ class JDBCPEvents(client: String, config: StorageClientConfig, namespace: String
     val par = scala.math.min(
       new Duration(upper - lower).getStandardDays,
       config.properties.getOrElse("PARTITIONS", "4").toLong).toInt
-    val entityTypeClause = entityType.map(x => s"""and "entityType" = '$x'""").getOrElse("")
-    val entityIdClause = entityId.map(x => s"""and "entityId" = '$x'""").getOrElse("")
+    val entityTypeClause = entityType.map(x => s"and entityType = '$x'").getOrElse("")
+    val entityIdClause = entityId.map(x => s"and entityId = '$x'").getOrElse("")
     val eventNamesClause =
-      eventNames.map("and (" + _.map(y => s""""event\" = '$y'""").mkString(" or ") + ")").getOrElse("")
+      eventNames.map("and (" + _.map(y => s"event = '$y'").mkString(" or ") + ")").getOrElse("")
     val targetEntityTypeClause = targetEntityType.map(
-      _.map(x => s"""and "targetEntityType" = '$x'"""
-    ).getOrElse(s"""and "targetEntityType" is null""")).getOrElse("")
+      _.map(x => s"and targetEntityType = '$x'"
+    ).getOrElse("and targetEntityType is null")).getOrElse("")
     val targetEntityIdClause = targetEntityId.map(
-      _.map(x => s"""and "targetEntityId" = '$x'"""
-    ).getOrElse(s"""and "targetEntityId" is null""")).getOrElse("")
+      _.map(x => s"and targetEntityId = '$x'"
+    ).getOrElse("and targetEntityId is null")).getOrElse("")
     val q = s"""
       select
-        "id",
-        "event",
-        "entityType",
-        "entityId",
-        "targetEntityType",
-        "targetEntityId",
-        "properties",
-        "eventTime",
-        "eventTimeZone",
-        "tags",
-        "prId",
-        "creationTime",
-        "creationTimeZone"
+        id,
+        event,
+        entityType,
+        entityId,
+        targetEntityType,
+        targetEntityId,
+        properties,
+        eventTime,
+        eventTimeZone,
+        tags,
+        prId,
+        creationTime,
+        creationTimeZone
       from ${JDBCUtils.eventTableName(namespace, appId, channelId)}
       where
-        "eventTime" >= ${JDBCUtils.timestampFunction(client)}(?) and
-        "eventTime" < ${JDBCUtils.timestampFunction(client)}(?)
+        eventTime >= ${JDBCUtils.timestampFunction(client)}(?) and
+        eventTime < ${JDBCUtils.timestampFunction(client)}(?)
       $entityTypeClause
       $entityIdClause
       $eventNamesClause
@@ -117,26 +120,10 @@ class JDBCPEvents(client: String, config: StorageClientConfig, namespace: String
   }
 
   def write(events: RDD[Event], appId: Int, channelId: Option[Int])(sc: SparkContext): Unit = {
-    val sparkSession = SparkSession.builder().getOrCreate()
-
-    import sparkSession.implicits._
+    val sqlSession = SparkVersionDependent.sqlSession(sc)
+    import sqlSession.implicits._
 
     val tableName = JDBCUtils.eventTableName(namespace, appId, channelId)
-
-    val eventTableColumns = Seq[String](
-        "id"
-      , "event"
-      , "entityType"
-      , "entityId"
-      , "targetEntityType"
-      , "targetEntityId"
-      , "properties"
-      , "eventTime"
-      , "eventTimeZone"
-      , "tags"
-      , "prId"
-      , "creationTime"
-      , "creationTimeZone")
 
     val eventDF = events.map { event =>
       (event.eventId.getOrElse(JDBCUtils.generateId)
@@ -152,7 +139,7 @@ class JDBCPEvents(client: String, config: StorageClientConfig, namespace: String
         , event.prId
         , new java.sql.Timestamp(event.creationTime.getMillis)
         , event.creationTime.getZone.getID)
-    }.toDF(eventTableColumns:_*)
+    }.toDF(eventsColumnNamesInSQL:_*)
 
     // spark version 1.4.0 or higher
     val prop = new java.util.Properties
@@ -160,4 +147,26 @@ class JDBCPEvents(client: String, config: StorageClientConfig, namespace: String
     prop.setProperty("password", config.properties("PASSWORD"))
     eventDF.write.mode(SaveMode.Append).jdbc(client, tableName, prop)
   }
+
+  private val eventsColumnNamesInDF = Seq[String](
+        "id"
+      , "event"
+      , "entityType"
+      , "entityId"
+      , "targetEntityType"
+      , "targetEntityId"
+      , "properties"
+      , "eventTime"
+      , "eventTimeZone"
+      , "tags"
+      , "prId"
+      , "creationTime"
+      , "creationTimeZone")
+
+  // necessary for handling postgres "case-sensitivity"
+  private val eventsColumnNamesInSQL =
+    JDBCUtils.driverType(client) match {
+      case "postgresql" => eventsColumnNamesInDF.map(_.toLowerCase)
+      case _ => eventsColumnNamesInDF
+    }
 }

@@ -25,6 +25,11 @@ organization in ThisBuild := "org.apache.predictionio"
 
 scalaVersion in ThisBuild := "2.11.8"
 
+lazy val oldScalaVersion = "2.10.5"
+lazy val newScalaVersion = "2.11.8"
+
+crossScalaVersions := Seq(oldScalaVersion, newScalaVersion)
+
 scalacOptions in ThisBuild ++= Seq("-deprecation", "-unchecked", "-feature")
 
 scalacOptions in (ThisBuild, Test) ++= Seq("-Yrangepos")
@@ -38,7 +43,19 @@ elasticsearchVersion in ThisBuild := "1.4.4"
 
 json4sVersion in ThisBuild := "3.2.10"
 
-sparkVersion in ThisBuild := "2.0.0"
+sparkVersion in ThisBuild := getSparkVersion(scalaVersion.value)
+
+def getSparkVersion(scalaVersion: String) = scalaVersion match {
+  case `oldScalaVersion` => "1.6.2"
+  case `newScalaVersion` => "2.0.0"
+}
+
+akkaVersion in ThisBuild := getAkkaVersion(scalaVersion.value)
+
+def getAkkaVersion(scalaVersion: String) = scalaVersion match {
+  case `oldScalaVersion` => "2.3.15"
+  case `newScalaVersion` => "2.4.9"
+}
 
 lazy val pioBuildInfoSettings = buildInfoSettings ++ Seq(
   sourceGenerators in Compile <+= buildInfo,

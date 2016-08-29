@@ -32,10 +32,10 @@ libraryDependencies ++= Seq(
   "org.json4s"             %% "json4s-native"  % json4sVersion.value,
   "org.json4s"             %% "json4s-ext"     % json4sVersion.value,
   "org.scalaj"             %% "scalaj-http"    % "1.1.0",
-  "com.typesafe.akka"      %% "akka-actor"     % "2.4.8",
+  "com.typesafe.akka"      %% "akka-actor"     % akkaVersion.value,
   "io.spray" %% "spray-testkit" % "1.3.3" % "test",
   "org.specs2" %% "specs2" % "2.3.13" % "test",
-  "com.typesafe.akka"      %% "akka-slf4j"     % "2.4.8")
+  "com.typesafe.akka"      %% "akka-slf4j"     % akkaVersion.value)
 
 excludedJars in assembly <<= (fullClasspath in assembly) map { cp =>
   cp filter { _.data.getName match {

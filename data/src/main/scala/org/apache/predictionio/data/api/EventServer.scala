@@ -48,8 +48,7 @@ import spray.httpx.Json4sSupport
 import spray.routing._
 import spray.routing.authentication.Authentication
 
-import scala.concurrent.{ExecutionContext, Future, Await}
-import scala.concurrent.duration.Duration
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Try, Success, Failure}
 
 class  EventServiceActor(
@@ -630,7 +629,7 @@ object EventServer {
     if (config.stats) system.actorOf(Props[StatsActor], "StatsActor")
     system.actorOf(Props[PluginsActor], "PluginsActor")
     serverActor ! StartServer(config.ip, config.port)
-    Await.result(system.whenTerminated, Duration.Inf)
+    system.awaitTermination
   }
 }
 

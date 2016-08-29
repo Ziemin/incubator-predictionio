@@ -61,7 +61,7 @@ import spray.routing._
 import spray.routing.authentication.{UserPass, BasicAuth}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Future, Await}
+import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.language.existentials
 import scala.util.Failure
@@ -193,7 +193,7 @@ object CreateServer extends Logging {
           "master")
           implicit val timeout = Timeout(5.seconds)
           master ? StartServer()
-          Await.result(actorSystem.whenTerminated, Duration.Inf)
+          actorSystem.awaitTermination
         } getOrElse {
           error(s"Invalid engine ID or version. Aborting server.")
         }
@@ -332,7 +332,7 @@ class MasterActor (
       sprayHttpListener.map { l =>
         log.info("Server is shutting down.")
         l ! Http.Unbind(5.seconds)
-        Await.result(system.terminate(), Duration.Inf) : Unit
+        system.awaitTermination
       } getOrElse {
         log.warning("No active server is running.")
       }
@@ -376,7 +376,7 @@ class MasterActor (
         }
       } else {
         log.error("Bind failed. Shutting down.")
-        Await.result(system.whenTerminated, Duration.Inf) : Unit
+        system.awaitTermination
       }
   }
 

@@ -38,7 +38,6 @@ import org.json4s.native.Serialization.write
 import semverfi._
 
 import scala.io.Source
-import scala.io.StdIn.readLine
 import scala.sys.process._
 import scalaj.http._
 
@@ -105,7 +104,7 @@ object Template extends Logging {
     */
   def httpOptionalProxy(url: String): HttpRequest = {
     val gitProxy = try {
-      Some(Process("git config --global http.proxy").lineStream.toList(0))
+      Some(Process("git config --global http.proxy").lines.toList(0))
     } catch {
       case e: Throwable => None
     }
@@ -247,7 +246,7 @@ object Template extends Logging {
 
     val name = ca.template.name getOrElse {
       try {
-        Process("git config --global user.name").lineStream.toList(0)
+        Process("git config --global user.name").lines.toList(0)
       } catch {
         case e: Throwable =>
           readLine("Please enter author's name: ")
@@ -261,7 +260,7 @@ object Template extends Logging {
 
     val email = ca.template.email getOrElse {
       try {
-        Process("git config --global user.email").lineStream.toList(0)
+        Process("git config --global user.email").lines.toList(0)
       } catch {
         case e: Throwable =>
           readLine("Please enter author's e-mail address: ")

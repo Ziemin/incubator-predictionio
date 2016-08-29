@@ -47,11 +47,11 @@ libraryDependencies ++= Seq(
   "org.elasticsearch"       % "elasticsearch"  % elasticsearchVersion.value,
   "org.json4s"             %% "json4s-native"  % json4sVersion.value,
   "org.json4s"             %% "json4s-ext"     % json4sVersion.value,
-  "org.postgresql"          % "postgresql"     % "9.4-1204-jdbc41",
+  "org.postgresql"          % "postgresql"     % "9.4.1209",
   "org.scalatest"          %% "scalatest"      % "2.1.6" % "test",
   "org.scalikejdbc"        %% "scalikejdbc"    % "2.3.2",
   "org.slf4j"               % "slf4j-log4j12"  % "1.7.13",
-  "com.typesafe.akka"      %% "akka-actor"     % "2.4.8",
+  "com.typesafe.akka"      %% "akka-actor"     % akkaVersion.value,
   "org.specs2"             %% "specs2"         % "2.3.13" % "test")
 
 
