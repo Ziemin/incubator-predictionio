@@ -71,7 +71,8 @@ lazy val pioBuildInfoSettings = buildInfoSettings ++ Seq(
     version,
     scalaVersion,
     sbtVersion,
-    sparkVersion),
+    sparkVersion,
+    hadoopVersion),
   buildInfoPackage := "org.apache.predictionio.core")
 
 // Used temporarily to modify genjavadoc version to "0.10" until unidoc updates it
