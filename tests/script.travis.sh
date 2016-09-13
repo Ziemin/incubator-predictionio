@@ -22,7 +22,7 @@ if [[ $BUILD_TYPE == Unit ]]; then
   # Run license check
   ./tests/check_license.sh
 
-  if [[ $PIO_SCALA_VERSION == 2.10.5 ]]; then
+  if [[ $BUILD_PROFILE == scala-2.10 ]]; then
     export SPARK_HOME=`pwd`/vendors/spark-1.6.2-bin-hadoop2.6
   else
     export SPARK_HOME=`pwd`/vendors/spark-2.0.0-bin-hadoop2.7
@@ -34,9 +34,9 @@ if [[ $BUILD_TYPE == Unit ]]; then
   set +a
 
   # Run stylecheck
-  sbt ++$PIO_SCALA_VERSION scalastyle
+  sbt -Dbuild.profile=$BUILD_PROFILE scalastyle
   # Run all unit tests
-  sbt ++$PIO_SCALA_VERSION test
+  sbt -Dbuild.profile=$BUILD_PROFILE test
 
 else
   REPO=`pwd`

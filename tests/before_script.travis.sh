@@ -21,7 +21,7 @@ set -e
 if [[ $BUILD_TYPE == Unit ]]; then
   # Download spark, hbase
   mkdir vendors
-  if [[ $PIO_SCALA_VERSION == 2.10.5 ]]; then
+  if [[ $BUILD_PROFILE == scala-2.10 ]]; then
     wget http://d3kbcqa49mib13.cloudfront.net/spark-1.6.2-bin-hadoop2.6.tgz
     tar zxfC spark-1.6.2-bin-hadoop2.6.tgz vendors
     export SPARK_HOME=`pwd`/vendors/spark-1.6.2-bin-hadoop2.6
@@ -43,5 +43,5 @@ if [[ $BUILD_TYPE == Unit ]]; then
   ./bin/travis/pio-start-travis
 
 else # Integration Tests
-  ./make-distribution.sh $PIO_SCALA_VERSION
+  ./make-distribution.sh -Dbuild.profile=$BUILD_PROFILE
 fi
