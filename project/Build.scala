@@ -18,6 +18,12 @@
 import sbt._
 import Keys._
 
+case class Profile(
+  name: String,
+  scalaVersion: String,
+  sparkVersion: String,
+  hadoopVersion: String)
+
 object PIOBuild extends Build {
   val elasticsearchVersion = SettingKey[String](
     "elasticsearch-version",
@@ -28,10 +34,38 @@ object PIOBuild extends Build {
   val sparkVersion = SettingKey[String](
     "spark-version",
     "The version of Apache Spark used for building.")
-  val akkaVersion = SettingKey[String](
-    "akka-version",
-    "The version of Akka used for building")
   val hadoopVersion = SettingKey[String](
     "hadoop-version",
     "The version of Apache Hadoop used for building")
+  val akkaVersion = SettingKey[String](
+    "akka-version",
+    "The version of Akka used for building")
+  val buildProfile = SettingKey[Profile](
+    "build-profile",
+    "The dependency profile used for the build")
+
+  def versionPrefix(versionString: String) =
+    versionString.split('.').take(2).mkString(".")
+
+  def versionMajor(versionString: String) = versionString.split('.')(0).toInt
+  def versionMinor(versionString: String) = versionString.split('.')(1).toInt
+
+  val profiles: Map[String, Profile] =
+    Map(
+      "scala-2.10" -> Profile(
+        name="scala-2.10",
+        scalaVersion="2.10.5",
+        sparkVersion="1.6.2",
+        hadoopVersion="2.6.4"),
+
+      "scala-2.11" -> Profile(
+        name="scala-2.11",
+        scalaVersion="2.11.8",
+        sparkVersion="2.0.0",
+        hadoopVersion="2.7.3"))
+
+  def forScalaVersion(scalaVersion: String) =
+    profiles(s"scala-${PIOBuild.versionPrefix(scalaVersion)}")
+
+  lazy val printProfile = taskKey[Unit]("Print settings for the chosen profile")
 }

@@ -26,5 +26,6 @@ class BuildInfoPrinter {
     System.out.println("PIO_SBT_VERSION=" + BuildInfo.sbtVersion());
     System.out.println("PIO_SPARK_VERSION=" + BuildInfo.sparkVersion());
     System.out.println("PIO_HADOOP_VERSION=" + BuildInfo.hadoopVersion());
+    System.out.println("PIO_ELASTICSEARCH_VERSION=" + BuildInfo.elasticsearchVersion());
   }
 }

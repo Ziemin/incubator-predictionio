@@ -16,6 +16,7 @@
  */
 
 import UnidocKeys._
+import scala.math.Ordering.Implicits._
 
 name := "pio"
 
@@ -23,16 +24,44 @@ version in ThisBuild := "0.10.0-SNAPSHOT"
 
 organization in ThisBuild := "org.apache.predictionio"
 
-scalaVersion in ThisBuild := "2.11.8"
+scalaVersion in ThisBuild := sys.props.get("build.profile")
+  .map { prof =>
+    val scalaVersion = profiles(prof).scalaVersion
+    if (versionMinor(scalaVersion) < 11) {
+      sLog.value.warn(s"Scala version ${scalaVersion} is deprecated!")
+    }
+    scalaVersion
+  }
+  .getOrElse(profiles("scala-2.11").scalaVersion)
 
-lazy val oldScalaVersion = "2.10.5"
-lazy val newScalaVersion = "2.11.8"
-
-crossScalaVersions := Seq(oldScalaVersion, newScalaVersion)
+crossScalaVersions := profiles.values.map(_.scalaVersion).toSeq
 
 scalacOptions in ThisBuild ++= Seq("-deprecation", "-unchecked", "-feature")
 
 scalacOptions in (ThisBuild, Test) ++= Seq("-Yrangepos")
+
+buildProfile := {
+  val profile = forScalaVersion(scalaVersion.value)
+
+  val sparkVersion = sys.props.get("spark.version") map { sv =>
+    if ((versionMajor(sv), versionMinor(sv)) < (1, 6)) {
+      throw new IllegalArgumentException("Spark versions below 1.6 are no longer supported")
+    } else {
+      sv
+    }
+  } getOrElse(profile.sparkVersion)
+
+  val hadoopVersion = sys.props.get("hadoop.version").getOrElse(profile.hadoopVersion)
+
+  if (hadoopVersion != profile.hadoopVersion || sparkVersion != profile.sparkVersion) {
+    profile.copy(
+      name = profile.name + "-custom",
+      sparkVersion = sparkVersion,
+      hadoopVersion = hadoopVersion)
+  } else {
+    profile
+  }
+}
 
 fork in (ThisBuild, run) := true
 
@@ -41,31 +70,13 @@ javacOptions in (ThisBuild, compile) ++= Seq("-source", "1.7", "-target", "1.7",
 
 elasticsearchVersion in ThisBuild := "1.4.4"
 
+akkaVersion in ThisBuild := "2.3.15"
+
 json4sVersion in ThisBuild := "3.2.10"
 
-sparkVersion in ThisBuild := getSparkVersion(scalaVersion.value)
+sparkVersion in ThisBuild := buildProfile.value.sparkVersion
 
-def getSparkVersion(scalaVersion: String) = scalaVersion match {
-  case `oldScalaVersion` => "1.6.2"
-  case `newScalaVersion` => "2.0.0"
-}
-
-akkaVersion in ThisBuild := getAkkaVersion(scalaVersion.value)
-
-def getAkkaVersion(scalaVersion: String) = scalaVersion match {
-  case `oldScalaVersion` => "2.3.15"
-  case `newScalaVersion` => "2.4.9"
-}
-
-hadoopVersion in ThisBuild := getHadoopVersion(scalaVersion.value)
-
-def getHadoopVersion(scalaVersion: String) = scalaVersion match {
-  case `oldScalaVersion` => "2.6.4"
-  case `newScalaVersion` => "2.7.3"
-}
-
-def scalaVersionPrefix(versionString: String) =
-  versionString.split('.').take(2).mkString(".")
+hadoopVersion in ThisBuild := buildProfile.value.hadoopVersion
 
 lazy val pioBuildInfoSettings = buildInfoSettings ++ Seq(
   sourceGenerators in Compile <+= buildInfo,
@@ -75,7 +86,8 @@ lazy val pioBuildInfoSettings = buildInfoSettings ++ Seq(
     scalaVersion,
     sbtVersion,
     sparkVersion,
-    hadoopVersion),
+    hadoopVersion,
+    elasticsearchVersion),
   buildInfoPackage := "org.apache.predictionio.core")
 
 // Used temporarily to modify genjavadoc version to "0.10" until unidoc updates it
@@ -84,6 +96,14 @@ lazy val genjavadocSettings: Seq[sbt.Def.Setting[_]] = Seq(
     scalacOptions <+= target map (t => "-P:genjavadoc:out=" + (t / "java")))
 
 lazy val conf = file(".") / "conf"
+
+// Paths specified below are required for the tests, since thread pools initialized
+// in unit tests of data subproject are used later in spark jobs executed in core.
+// They need to have properly configured classloaders to load core classes for spark
+// in subsequent tests.
+def coreClasses(baseDirectory: java.io.File, scalaVersion: String) = Seq(
+  baseDirectory / s"../core/target/scala-${versionPrefix(scalaVersion)}/classes",
+  baseDirectory / s"../core/target/scala-${versionPrefix(scalaVersion)}/test-classes")
 
 lazy val root = project in file(".") aggregate(
   common,
@@ -106,23 +126,21 @@ lazy val data = (project in file("data")).
   dependsOn(common).
   settings(genjavadocSettings: _*).
   settings(unmanagedClasspath in Test += conf).
-  settings(fullClasspath in Test ++= Seq(
-    baseDirectory.value / s"../core/target/scala-${scalaVersionPrefix(scalaVersion.value)}/classes",
-    baseDirectory.value / s"../core/target/scala-${scalaVersionPrefix(scalaVersion.value)}/test-classes"))
-    // Paths added above are required for the tests, since thread pools initialized
-    // in unit tests of data subproject are used later in spark jobs executed in core.
-    // They need to have properly configured classloaders to load core classes for spark
-    // in subsequent tests.
+  settings(unmanagedSourceDirectories in Compile +=
+    sourceDirectory.value / s"main/spark-${versionMajor(sparkVersion.value)}").
+  settings(fullClasspath in Test ++= coreClasses(baseDirectory.value, scalaVersion.value))
 
 lazy val tools = (project in file("tools")).
   dependsOn(core).
   dependsOn(data).
   enablePlugins(SbtTwirl).
-  settings(unmanagedClasspath in Test += conf)
+  settings(unmanagedClasspath in Test += conf).
+  settings(fullClasspath in Test ++= coreClasses(baseDirectory.value, scalaVersion.value))
 
 lazy val e2 = (project in file("e2")).
   settings(genjavadocSettings: _*).
-  settings(unmanagedClasspath in Test += conf)
+  settings(unmanagedClasspath in Test += conf).
+  settings(fullClasspath in Test ++= coreClasses(baseDirectory.value, scalaVersion.value))
 
 scalaJavaUnidocSettings
 
@@ -235,3 +253,11 @@ parallelExecution := false
 parallelExecution in Global := false
 
 testOptions in Test += Tests.Argument("-oDF")
+
+printProfile := {
+  val profile = buildProfile.value
+  println(s"PROFILE_NAME=${profile.name}")
+  println(s"SCALA_VERSION=${profile.scalaVersion}")
+  println(s"SPARK_VERSION=${profile.sparkVersion}")
+  println(s"HADOOP_VERSION=${profile.hadoopVersion}")
+}
