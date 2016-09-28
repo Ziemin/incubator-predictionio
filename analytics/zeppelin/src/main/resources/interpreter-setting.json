@@ -1,0 +1,370 @@
+[
+  {
+    "group": "spark",
+    "name": "spark",
+    "className": "org.apache.zeppelin.spark.SparkInterpreter",
+    "defaultInterpreter": true,
+    "properties": {
+      "spark.executor.memory": {
+        "envName": null,
+        "propertyName": "spark.executor.memory",
+        "defaultValue": "",
+        "description": "Executor memory per worker instance. ex) 512m, 32g"
+      },
+      "args": {
+        "envName": null,
+        "propertyName": null,
+        "defaultValue": "",
+        "description": "spark commandline args"
+      },
+      "zeppelin.spark.useHiveContext": {
+        "envName": "ZEPPELIN_SPARK_USEHIVECONTEXT",
+        "propertyName": "zeppelin.spark.useHiveContext",
+        "defaultValue": "true",
+        "description": "Use HiveContext instead of SQLContext if it is true."
+      },
+      "spark.app.name": {
+        "envName": "SPARK_APP_NAME",
+
+        "propertyName": "spark.app.name",
+        "defaultValue": "Zeppelin",
+        "description": "The name of spark application."
+      },
+      "zeppelin.spark.printREPLOutput": {
+        "envName": null,
+        "propertyName": null,
+        "defaultValue": "true",
+        "description": "Print REPL output"
+      },
+      "spark.cores.max": {
+        "envName": null,
+        "propertyName": "spark.cores.max",
+        "defaultValue": "",
+        "description": "Total number of cores to use. Empty value uses all available core."
+      },
+      "zeppelin.spark.maxResult": {
+        "envName": "ZEPPELIN_SPARK_MAXRESULT",
+        "propertyName": "zeppelin.spark.maxResult",
+        "defaultValue": "1000",
+        "description": "Max number of Spark SQL result to display."
+      },
+      "master": {
+        "envName": "MASTER",
+        "propertyName": "spark.master",
+        "defaultValue": "local[*]",
+        "description": "Spark master uri. ex) spark://masterhost:7077"
+      }
+    },
+    "editor": {
+      "language": "scala"
+    }
+  },
+  {
+    "group": "spark",
+    "name": "sql",
+    "className": "org.apache.zeppelin.spark.SparkSqlInterpreter",
+    "properties": {
+      "zeppelin.spark.concurrentSQL": {
+        "envName": "ZEPPELIN_SPARK_CONCURRENTSQL",
+        "propertyName": "zeppelin.spark.concurrentSQL",
+        "defaultValue": "false",
+        "description": "Execute multiple SQL concurrently if set true."
+      },
+      "zeppelin.spark.sql.stacktrace": {
+        "envName": "ZEPPELIN_SPARK_SQL_STACKTRACE",
+        "propertyName": "zeppelin.spark.sql.stacktrace",
+        "defaultValue": "false",
+        "description": "Show full exception stacktrace for SQL queries if set to true."
+      },
+      "zeppelin.spark.maxResult": {
+        "envName": "ZEPPELIN_SPARK_MAXRESULT",
+        "propertyName": "zeppelin.spark.maxResult",
+        "defaultValue": "1000",
+        "description": "Max number of Spark SQL result to display."
+      },
+      "zeppelin.spark.importImplicit": {
+        "envName": "ZEPPELIN_SPARK_IMPORTIMPLICIT",
+        "propertyName": "zeppelin.spark.importImplicit",
+        "defaultValue": "true",
+        "description": "Import implicits, UDF collection, and sql if set true. true by default."
+      }
+    },
+    "editor": {
+      "language": "sql"
+    }
+  },
+  {
+    "group": "spark",
+    "name": "dep",
+    "className": "org.apache.zeppelin.spark.DepInterpreter",
+    "properties": {
+      "zeppelin.dep.localrepo": {
+        "envName": "ZEPPELIN_DEP_LOCALREPO",
+        "propertyName": null,
+        "defaultValue": "local-repo",
+        "description": "local repository for dependency loader"
+      },
+      "zeppelin.dep.additionalRemoteRepository": {
+        "envName": null,
+        "propertyName": null,
+        "defaultValue": "spark-packages,http://dl.bintray.com/spark-packages/maven,false;",
+        "description": "A list of 'id,remote-repository-URL,is-snapshot;' for each remote repository."
+      }
+    },
+    "editor": {
+      "language": "scala"
+    }
+  },
+  {
+    "group": "spark",
+    "name": "pyspark",
+    "className": "org.apache.zeppelin.spark.PySparkInterpreter",
+    "properties": {
+      "zeppelin.pyspark.python": {
+        "envName": "PYSPARK_PYTHON",
+        "propertyName": null,
+        "defaultValue": "python",
+        "description": "Python command to run pyspark with"
+      }
+    },
+    "editor": {
+      "language": "python"
+    }
+  },
+  {
+    "group": "spark",
+    "name": "r",
+    "className": "org.apache.zeppelin.spark.SparkRInterpreter",
+    "properties": {
+      "zeppelin.R.knitr": {
+        "envName": "ZEPPELIN_R_KNITR",
+        "propertyName": "zeppelin.R.knitr",
+        "defaultValue": "true",
+        "description": "whether use knitr or not"
+      },
+      "zeppelin.R.cmd": {
+        "envName": "ZEPPELIN_R_CMD",
+        "propertyName": "zeppelin.R.cmd",
+        "defaultValue": "R",
+        "description": "R repl path"
+      },
+      "zeppelin.R.image.width": {
+        "envName": "ZEPPELIN_R_IMAGE_WIDTH",
+        "propertyName": "zeppelin.R.image.width",
+        "defaultValue": "100%",
+        "description": ""
+      },
+      "zeppelin.R.render.options": {
+        "envName": "ZEPPELIN_R_RENDER_OPTIONS",
+        "propertyName": "zeppelin.R.render.options",
+        "defaultValue": "out.format = 'html', comment = NA, echo = FALSE, results = 'asis', message = F, warning = F",
+        "description": ""
+      }
+    },
+    "editor": {
+      "language": "r"
+    }
+  },
+  {
+    "group": "spark",
+    "name": "pio-spark",
+    "className": "org.apache.predictionio.zeppelin.PioSparkInterpreter",
+    "properties": {
+      "PIO_HOME": {
+        "envName": "PIO_HOME",
+        "propertyName": "zeppelin.PIO.home",
+        "defaultValue": "pio-home",
+        "description": "Path to PIO installation"
+      },
+      "POSTGRES_JDBC_DRIVER": {
+        "envName": "POSTGRES_JDBC_DRIVER",
+        "propertyName": "zeppelin.PIO.postgres.jdbc.driver",
+        "defaultValue": "/lib/postgresql-9.4.1209.jar",
+        "description": "Path to jar with postgres Jdbc driver"
+      },
+      "MYSQL_JDBC_DRIVER": {
+        "envName": "MYSQL_JDBC_DRIVER",
+        "propertyName": "zeppelin.PIO.mysql.jdbc.driver",
+        "defaultValue": "/lib/mysql-connector-java-5.1.37.jar",
+        "description": "Path to jar with mysql Jdbc driver"
+      },
+      "ES_CONF_DIR": {
+        "envName": "ES_CONF_DIR",
+        "propertyName": "zeppelin.PIO.es.conf.dir",
+        "defaultValue": "/opt/elasticsearch",
+        "description": "You must configure this if you have advanced configuration for your Elasticsearch setup"
+      },
+      "HADOOP_CONF_DIR": {
+        "envName": "HADOOP_CONF_DIR",
+        "propertyName": "zeppelin.PIO.hadoop.conf.dir",
+        "defaultValue": "/opt/hadoop",
+        "description": "You must configure this if you intend to run PredictionIO with Hadoop 2"
+      },
+      "HBASE_CONF_DIR": {
+        "envName": "HBASE_CONF_DIR",
+        "propertyName": "zeppelin.PIO.hbase.conf.dir",
+        "defaultValue": "/vendors/hbase-1.0.0/conf",
+        "description": "You must configure this if you intend to run PredictionIO with HBASE on a remote cluster"
+      },
+      "PIO_FS_BASEDIR": {
+        "envName": "PIO_FS_BASEDIR",
+        "propertyName": "zeppelin.PIO.fs.basedir",
+        "defaultValue": "/pio_store",
+        "description": "PredictionIO uses this path as block storage."
+      },
+      "PIO_FS_ENGINESDIR": {
+        "envName": "PIO_FS_ENGINESDIR",
+        "propertyName": "zeppelin.PIO.fs.enginesdir",
+        "defaultValue": "/pio_store/engines",
+        "description": "PredictionIO uses this path as block storage."
+      },
+      "PIO_FS_TMPDIR": {
+        "envName": "PIO_FS_TMPDIR",
+        "propertyName": "zeppelin.PIO.fs.tmpdir",
+        "defaultValue": "/pio_store/tmp",
+        "description": "PredictionIO uses this path as block storage."
+      },
+      "PIO_STORAGE_REPOSITORIES_METADATA_NAME": {
+        "envName": "PIO_STORAGE_REPOSITORIES_METADATA_NAME",
+        "propertyName": "zeppelin.PIO.storage.repositories.metadata.name",
+        "defaultValue": "pio_meta",
+        "description": "Meta data store name"
+      },
+      "PIO_STORAGE_REPOSITORIES_METADATA_SOURCE": {
+        "envName": "PIO_STORAGE_REPOSITORIES_METADATA_SOURCE",
+        "propertyName": "zeppelin.PIO.storage.repositories.metadata.source",
+        "defaultValue": "PGSQL",
+        "description": "The source of meta data"
+      },
+      "PIO_STORAGE_REPOSITORIES_EVENTDATA_NAME": {
+        "envName": "PIO_STORAGE_REPOSITORIES_EVENTDATA_NAME",
+        "propertyName": "zeppelin.PIO.storage.repositories.eventdata.name",
+        "defaultValue": "pio_event",
+        "description": "Event data store name"
+      },
+      "PIO_STORAGE_REPOSITORIES_EVENTDATA_SOURCE": {
+        "envName": "PIO_STORAGE_REPOSITORIES_EVENTDATA_SOURCE",
+        "propertyName": "zeppelin.PIO.storage.repositories.eventdata.source",
+        "defaultValue": "PGSQL",
+        "description": "The source of event data"
+      },
+      "PIO_STORAGE_REPOSITORIES_MODELDATA_NAME": {
+        "envName": "PIO_STORAGE_REPOSITORIES_MODELDATA_NAME",
+        "propertyName": "zeppelin.PIO.storage.repositories.modeldata.name",
+        "defaultValue": "PGSQL",
+        "description": "Model data store name"
+      },
+      "PIO_STORAGE_REPOSITORIES_MODELDATA_SOURCE": {
+        "envName": "PIO_STORAGE_REPOSITORIES_MODELDATA_SOURCE",
+        "propertyName": "zeppelin.PIO.storage.repositories.modeldata.source",
+        "defaultValue": "pio_model",
+        "description": "The source of model data"
+      },
+      "PIO_STORAGE_SOURCES_PGSQL_TYPE": {
+        "envName": "PIO_STORAGE_SOURCES_PGSQL_TYPE",
+        "propertyName": "zeppelin.PIO.storage.sources.pgsql.type",
+        "defaultValue": "jdbc",
+        "description": ""
+      },
+      "PIO_STORAGE_SOURCES_PGSQL_URL": {
+        "envName": "PIO_STORAGE_SOURCES_PGSQL_URL",
+        "propertyName": "zeppelin.PIO.storage.sources.pgsql.url",
+        "defaultValue": "jdbc:postgresql://localhost/pio",
+        "description": ""
+      },
+      "PIO_STORAGE_SOURCES_PGSQL_USERNAME": {
+        "envName": "PIO_STORAGE_SOURCES_PGSQL_USERNAME",
+        "propertyName": "zeppelin.PIO.storage.sources.pgsql.username",
+        "defaultValue": "pio",
+        "description": ""
+      },
+      "PIO_STORAGE_SOURCES_PGSQL_PASSWORD": {
+        "envName": "PIO_STORAGE_SOURCES_PGSQL_PASSWORD",
+        "propertyName": "zeppelin.PIO.storage.sources.pgsql.password",
+        "defaultValue": "pio",
+        "description": ""
+      },
+      "PIO_STORAGE_SOURCES_MYSQL_TYPE": {
+        "envName": "PIO_STORAGE_SOURCES_MYSQL_TYPE",
+        "propertyName": "zeppelin.PIO.storage.sources.mysql.type",
+        "defaultValue": "jdbc",
+        "description": ""
+      },
+      "PIO_STORAGE_SOURCES_MYSQL_URL": {
+        "envName": "PIO_STORAGE_SOURCES_MYSQL_URL",
+        "propertyName": "zeppelin.PIO.storage.sources.mysql.url",
+        "defaultValue": "jdbc:postgresql://localhost/pio",
+        "description": ""
+      },
+      "PIO_STORAGE_SOURCES_MYSQL_USERNAME": {
+        "envName": "PIO_STORAGE_SOURCES_MYSQL_USERNAME",
+        "propertyName": "zeppelin.PIO.storage.sources.mysql.username",
+        "defaultValue": "pio",
+        "description": ""
+      },
+      "PIO_STORAGE_SOURCES_MYSQL_PASSWORD": {
+        "envName": "PIO_STORAGE_SOURCES_MYSQL_PASSWORD",
+        "propertyName": "zeppelin.PIO.storage.sources.mysql.password",
+        "defaultValue": "pio",
+        "description": ""
+      },
+      "PIO_STORAGE_SOURCES_ELASTICSEARCH_TYPE": {
+        "envName": "PIO_STORAGE_SOURCES_ELASTICSEARCH_TYPE",
+        "propertyName": "zeppelin.PIO.storage.sources.elasticsearch.type",
+        "defaultValue": "elasticsearch",
+        "description": ""
+      },
+      "PIO_STORAGE_SOURCES_ELASTICSEARCH_CLUSTERNAME": {
+        "envName": "PIO_STORAGE_SOURCES_ELASTICSEARCH_CLUSTERNAME",
+        "propertyName": "zeppelin.PIO.storage.sources.elasticsearch.clustername",
+        "defaultValue": "",
+        "description": ""
+      },
+      "PIO_STORAGE_SOURCES_ELASTICSEARCH_HOSTS": {
+        "envName": "PIO_STORAGE_SOURCES_ELASTICSEARCH_HOSTS",
+        "propertyName": "zeppelin.PIO.storage.sources.elasticsearch.hosts",
+        "defaultValue": "localhost",
+        "description": ""
+      },
+      "PIO_STORAGE_SOURCES_ELASTICSEARCH_PORTS": {
+        "envName": "PIO_STORAGE_SOURCES_ELASTICSEARCH_PORTS",
+        "propertyName": "zeppelin.PIO.storage.sources.elasticsearch.ports",
+        "defaultValue": "9300",
+        "description": ""
+      },
+      "PIO_STORAGE_SOURCES_ELASTICSEARCH_HOME": {
+        "envName": "PIO_STORAGE_SOURCES_ELASTICSEARCH_HOME",
+        "propertyName": "zeppelin.PIO.storage.sources.elasticsearch.home",
+        "defaultValue": "/vendors/elasticsearch-1.4.4",
+        "description": ""
+      },
+      "PIO_STORAGE_SOURCES_LOCALFS_TYPE": {
+        "envName": "PIO_STORAGE_SOURCES_LOCALFS_TYPE",
+        "propertyName": "zeppelin.PIO.storage.sources.localfs.type",
+        "defaultValue": "localfs",
+        "description": ""
+      },
+      "PIO_STORAGE_SOURCES_LOCALFS_PATH": {
+        "envName": "PIO_STORAGE_SOURCES_LOCALFS_PATH",
+        "propertyName": "zeppelin.PIO.storage.sources.localfs.path",
+        "defaultValue": "/models",
+        "description": ""
+      },
+      "PIO_STORAGE_SOURCES_HBASE_TYPE": {
+        "envName": "PIO_STORAGE_SOURCES_HBASE_TYPE",
+        "propertyName": "zeppelin.PIO.storage.sources.hbase.type",
+        "defaultValue": "hbase",
+        "description": ""
+      },
+      "PIO_STORAGE_SOURCES_HBASE_HOME": {
+        "envName": "PIO_STORAGE_SOURCES_HBASE_HOME",
+        "propertyName": "zeppelin.PIO.storage.sources.hbase.home",
+        "defaultValue": "/vendors/hbase-1.0.0",
+        "description": ""
+      }
+    },
+    "editor": {
+      "language": "scala"
+    }
+  }
+]

@@ -127,7 +127,8 @@ lazy val root = project in file(".") aggregate(
   core,
   data,
   tools,
-  e2)
+  e2,
+  zeppelin)
 
 lazy val common = (project in file("common")).
   settings(unmanagedClasspath in Test += conf)
@@ -158,6 +159,11 @@ lazy val e2 = (project in file("e2")).
   settings(genjavadocSettings: _*).
   settings(unmanagedClasspath in Test += conf).
   settings(fullClasspath in Test ++= coreClasses(baseDirectory.value, scalaVersion.value))
+
+lazy val zeppelin = (project in file("analytics/zeppelin")).
+  dependsOn(core).
+  dependsOn(data).
+  settings(unmanagedClasspath in Test += conf)
 
 scalaJavaUnidocSettings
 
